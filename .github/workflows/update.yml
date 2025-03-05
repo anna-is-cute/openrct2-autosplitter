@@ -22,10 +22,12 @@ jobs:
         cat OpenRCT2_header.asl OpenRCT2_post.asl > OpenRCT2.asl
     - name: Commit
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add OpenRCT2.asl
-        git commit -m 'chore: update autosplitter script'
+        if test -n "$(git status --porcelain)"; then
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add OpenRCT2.asl
+          git commit -m 'chore: update autosplitter script'
+        fi
     - name: Push
       uses: ad-m/github-push-action@master
       with:
