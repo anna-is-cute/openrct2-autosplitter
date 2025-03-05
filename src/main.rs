@@ -10,7 +10,7 @@ use anyhow::{Context, Result};
 use git2::{build::RepoBuilder, Repository};
 use once_cell::unsync::Lazy;
 use pdb::{FallibleIterator, SymbolData, TypeData, PDB as Pdb};
-use reqwest::Client;
+use reqwest::{Client, Url};
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -26,15 +26,36 @@ async fn main() -> Result<()> {
     let client = Client::new();
 
     println!("Fetching releases...");
-    let releases: Vec<Release> = client
-        .get("https://api.github.com/repos/OpenRCT2/OpenRCT2/releases?per_page=100")
-        .header("User-Agent", "openrct2-autosplitter generator")
-        .header("Accept", "application/vnd.github.v3+json")
-        .send()
-        .await
-        .context("could not fetch OpenRCT2 releases")?
-        .json()
-        .await?;
+    let mut releases = Vec::new();
+    let mut url = Url::parse("https://api.github.com/repos/OpenRCT2/OpenRCT2/releases")
+        .context("could not parse releases url")?;
+    loop {
+        let page = client
+            .get(url.as_str())
+            .header("User-Agent", "openrct2-autosplitter generator")
+            .header("Accept", "application/vnd.github.v3+json")
+            .send()
+            .await
+            .context("could not fetch OpenRCT2 releases")?;
+
+        let link = page
+            .headers()
+            .get("link")
+            .and_then(|value| value.to_str().ok())
+            .and_then(|value| parse_link_header::parse(value).ok())
+            .unwrap_or_default();
+
+        let mut page: Vec<Release> = page
+            .json()
+            .await
+            .context("could not parse releases as json")?;
+        releases.append(&mut page);
+
+        match link.get(&Some("next".to_string())) {
+            Some(link) => url = Url::parse(&link.raw_uri).context("could not parse next url")?,
+            None => break,
+        }
+    }
 
     let repo_info = Lazy::new(|| {
         println!("Cloning repository...");
