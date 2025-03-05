@@ -1,7 +1,7 @@
 #![feature(try_blocks)]
 
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     io::{Cursor, Read},
     path::Path,
 };
@@ -192,21 +192,33 @@ async fn main() -> Result<()> {
     println!("  Saving cache...");
     cache.save().await?;
 
+    let mut supports_load_remover = HashMap::with_capacity(offsets.len());
     for (release_ref, has_dll, offsets) in offsets {
         output
             .write_all(format!("state(\"openrct2\", \"{}\") {{\n", release_ref).as_bytes())
             .await?;
         offsets.write_offsets(&mut output, has_dll).await?;
         output.write_all(b"}\n\n").await?;
+        supports_load_remover.insert(release_ref, offsets.load_remover_will_work());
     }
 
     output.write_all(b"init {\n    var module = modules.First();\n    string hash = vars.CalcModuleHash(module);\n    switch (hash) {\n").await?;
     for (release_ref, hash) in hashes {
+        let supports_load_remover = supports_load_remover
+            .get(&release_ref)
+            .copied()
+            .unwrap_or_default();
         output
             .write_all(
                 format!(
-                    "        case \"{}\":\n            version = \"{}\";\n            break;\n",
-                    hash, release_ref
+                    "        case \"{}\":\n            version = \"{}\";\n            vars.loadRemover = {};\n            break;\n",
+                    hash,
+                    release_ref,
+                    if supports_load_remover {
+                        "true"
+                    } else {
+                        "false"
+                    }
                 )
                 .as_bytes(),
             )
