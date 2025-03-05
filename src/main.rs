@@ -138,7 +138,7 @@ async fn main() -> Result<()> {
             {
                 Some(cached) => {
                     let mut cached = cached.clone();
-                    if !cached.is_valid() {
+                    if !cached.autosplitter_will_work() {
                         process_symbols(&client, symbols_asset, &mut cached).await?;
                     }
 
@@ -152,8 +152,12 @@ async fn main() -> Result<()> {
                 _ => continue,
             };
 
-            if !release_offsets.is_valid() {
+            if !release_offsets.autosplitter_will_work() {
                 println!("    Warning: offsets state not valid - parts of the autosplitter may not work for this version");
+            }
+
+            if !release_offsets.load_remover_will_work() {
+                println!("    Warning: missing loading information - load remover will not work for this version");
             }
 
             offsets.push((release_ref.clone(), has_dll, release_offsets.clone()));
@@ -425,13 +429,17 @@ struct Offsets {
 }
 
 impl Offsets {
-    pub fn is_valid(&self) -> bool {
+    pub fn autosplitter_will_work(&self) -> bool {
         let has_screen_flags = self.screen_flags.is_some();
         let has_completed_value = self.completed_value.is_some();
         let has_game_state_data =
             self.game_state.is_some() && self.game_state_completed_value.is_some();
-        let has_map_change = self.map_changed_expected.is_some();
-        has_screen_flags && (has_completed_value ^ has_game_state_data) && has_map_change
+        let has_pointer_info = self.game_state_is_pointer.is_some();
+        has_screen_flags && (has_completed_value ^ (has_game_state_data && has_pointer_info))
+    }
+
+    pub fn load_remover_will_work(&self) -> bool {
+        self.map_changed_expected.is_some()
     }
 
     async fn write_offset<W: AsyncWrite + Unpin>(

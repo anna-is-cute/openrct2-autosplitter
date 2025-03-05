@@ -173,6 +173,56 @@ state("openrct2", "v0.3.0 (135cc10)") {
     ulong gScenarioCompletedCompanyValue : 0xa63f3c;
 }
 
+state("openrct2", "v0.2.6 (6c3c857)") {
+    byte gScreenFlags : 0x910373;
+    ulong gScenarioCompletedCompanyValue : 0xcb68bc;
+}
+
+state("openrct2", "v0.2.5 (4f6e77e)") {
+    byte gScreenFlags : 0x90a363;
+    ulong gScenarioCompletedCompanyValue : 0xcb06a0;
+}
+
+state("openrct2", "v0.2.4 (d645338)") {
+    byte gScreenFlags : "openrct2.dll", 0xa669ef;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xe0da24;
+}
+
+state("openrct2", "v0.2.3 (ac7a1eb)") {
+    byte gScreenFlags : "openrct2.dll", 0xa51ff6;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xc79128;
+}
+
+state("openrct2", "v0.2.2 (298c9f5)") {
+    byte gScreenFlags : "openrct2.dll", 0xa0f63f;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xcefdb4;
+}
+
+state("openrct2", "v0.2.1 (8ac731e)") {
+    byte gScreenFlags : "openrct2.dll", 0x9d676a;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xcb6204;
+}
+
+state("openrct2", "v0.2.0 (0aff800)") {
+    byte gScreenFlags : "openrct2.dll", 0x9c2eae;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xc92568;
+}
+
+state("openrct2", "v0.1.2 (0e7c0f7)") {
+    byte gScreenFlags : "openrct2.dll", 0x9eb556;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xca1e98;
+}
+
+state("openrct2", "v0.1.1 (4601265)") {
+    byte gScreenFlags : "openrct2.dll", 0x8dfc53;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xf3ba64;
+}
+
+state("openrct2", "v0.1.0 (6d1f732)") {
+    byte gScreenFlags : "openrct2.dll", 0xf4cdc2;
+    ulong gScenarioCompletedCompanyValue : "openrct2.dll", 0xf4c524;
+}
+
 init {
     var module = modules.First();
     string hash = vars.CalcModuleHash(module);
@@ -266,6 +316,36 @@ init {
             break;
         case "960d49fa00c658886e66ec119f07668584ab768b21b10beade5d9d6a164c2a29":
             version = "v0.3.0 (135cc10)";
+            break;
+        case "1fba35105b12c0292b16d9f003897aa5a5884f3412346da68919325827c92c0d":
+            version = "v0.2.6 (6c3c857)";
+            break;
+        case "f90120d4d1bb5595b23a71ea0bd52bc22d5105ca28201b5f47d14beab4cb9309":
+            version = "v0.2.5 (4f6e77e)";
+            break;
+        case "4d798b22ba0455cb1fc27565e5ffcb3912eeb655f2c5f5d41e61b6e4abdebfea":
+            version = "v0.2.4 (d645338)";
+            break;
+        case "20ebff6e0e6f4b8c7b9e93f7d9465e63a674c1581f78e1cee6745aac4d09c153":
+            version = "v0.2.3 (ac7a1eb)";
+            break;
+        case "7d0818603af935e960af602805b07a57a9235549b48880a51e858ef54f2676a7":
+            version = "v0.2.2 (298c9f5)";
+            break;
+        case "8811e80831182297410ef94b7e5e45f302753865609dc00439e8c0c8c42d2297":
+            version = "v0.2.1 (8ac731e)";
+            break;
+        case "71eba971aeee310c03106ba67f61769f01817168d3d4a68f2069dd04e75f9901":
+            version = "v0.2.0 (0aff800)";
+            break;
+        case "acd53a0c6d5759c93773eb8988ddb9657e9a54489329d7d16679aa8d541c715d":
+            version = "v0.1.2 (0e7c0f7)";
+            break;
+        case "16d3acefa040aa0c40c79a63e88f180a541ad2d8b778ca1cb6f4161138706b0a":
+            version = "v0.1.1 (4601265)";
+            break;
+        case "ca49efaf5aca4b57def8662131e3e2b65f7b3772e2787c24ebed266ecd323fcb":
+            version = "v0.1.0 (6d1f732)";
             break;
     }
 }
