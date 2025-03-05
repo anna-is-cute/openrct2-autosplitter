@@ -1,0 +1,25 @@
+image: fedora/latest
+packages:
+  - openssl-devel
+secrets:
+  - 7da044d3-4f66-468c-865c-f986e6d7467a
+tasks:
+  - install-rust: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal --default-toolchain nightly -y
+      echo 'source "$HOME"/.cargo/env' >> ~/.buildenv
+  - build: |
+      cd openrct2-autosplitter
+      cargo run --release
+      cat OpenRCT2_header.asl OpenRCT2_post.asl > OpenRCT2.asl
+  - commit: |
+      cd openrct2-autosplitter
+      ssh-keygen -F git.anna.lgbt || ssh-keyscan git.anna.lgbt >> ~/.ssh/known_hosts
+      git remote remove origin
+      git remote add origin git@git.anna.lgbt:anna/openrct2-autosplitter
+      git config --global user.email 'noreply@builds.sr.ht'
+      git config --global user.name 'builds.sr.ht'
+      git commit -am 'chore(auto): update script' || true
+      git checkout -b update HEAD
+      git checkout main
+      git rebase update
+      git push -o skip-ci origin main
