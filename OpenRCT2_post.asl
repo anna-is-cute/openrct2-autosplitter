@@ -36,5 +36,5 @@ split {
 }
 
 isLoading {
-    return _mapChangedExpected == 1;
+    return current._mapChangedExpected == 1;
 }
