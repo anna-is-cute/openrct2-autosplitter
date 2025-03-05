@@ -1,5 +1,3 @@
-#![feature(try_blocks)]
-
 use std::{
     collections::{BTreeMap, HashMap},
     io::{Cursor, Read},
@@ -57,7 +55,7 @@ async fn main() -> Result<()> {
         }
     }
 
-    let repo_info = Lazy::new(|| {
+    let repo_info: Lazy<Result<RepoInfo>> = Lazy::new(|| {
         println!("Cloning repository...");
         checkout_repo()
     });
@@ -78,112 +76,14 @@ async fn main() -> Result<()> {
     let mut hashes = Vec::with_capacity(releases.len());
     let mut offsets = Vec::with_capacity(releases.len());
     for release in releases {
-        let res: Result<()> = try {
-            let symbols_asset = match release
-                .assets
-                .iter()
-                .find(|asset| asset.name.contains("symbols-x64"))
-            {
-                Some(asset) => asset,
-                None => Err(anyhow::anyhow!(
-                    "Release {} is missing debug symbols",
-                    release.name
-                ))?,
-            };
-
-            let binary_asset = match release
-                .assets
-                .iter()
-                .find(|asset| asset.name.contains("windows-portable-x64"))
-            {
-                Some(asset) => asset,
-                None => Err(anyhow::anyhow!(
-                    "Release {} is missing binaries",
-                    release.name
-                ))?,
-            };
-
-            let release_ref = match cache.release_refs.get(&release.id) {
-                Some(cached) => cached.clone(),
-                None => {
-                    let info = match &*repo_info {
-                        Ok(info) => info,
-                        Err(e) => Err(anyhow::anyhow!("could not clone repository: {}", e))?,
-                    };
-                    let reference = info
-                        .repo
-                        .find_reference(&format!("refs/tags/{}", release.tag_name))?;
-                    let commit = reference.peel_to_commit()?;
-                    let sha = commit.id().to_string();
-                    format!("{} ({})", release.tag_name, &sha[..7])
-                }
-            };
-
-            println!("  Downloading binaries for {}", release_ref);
-            let (hash, has_dll) = match cache
-                .assets
-                .get(&(binary_asset.id, binary_asset.size))
-                .and_then(|cached| cached.hash.as_ref().map(|hash| (hash, cached.has_dll)))
-            {
-                Some((hash, has_dll)) => (hash.clone(), has_dll),
-                None => process_binary(&client, binary_asset).await?,
-            };
-            hashes.push((release_ref.clone(), hash.clone()));
-
-            println!("  Downloading symbols for {}", release_ref);
-            let release_offsets = match cache
-                .assets
-                .get(&(symbols_asset.id, symbols_asset.size))
-                .and_then(|cached| cached.offsets.as_ref())
-            {
-                Some(cached) => {
-                    let mut cached = cached.clone();
-                    if !cached.autosplitter_will_work() {
-                        process_symbols(&client, symbols_asset, &mut cached).await?;
-                    }
-
-                    cached
-                }
-                _ if release.id == 202370656 => {
-                    let mut offsets = Offsets::default();
-                    process_symbols(&client, symbols_asset, &mut offsets).await?;
-                    offsets
-                }
-                _ => continue,
-            };
-
-            if !release_offsets.autosplitter_will_work() {
-                println!("    Warning: offsets state not valid - parts of the autosplitter may not work for this version");
-            }
-
-            if !release_offsets.load_remover_will_work() {
-                println!("    Warning: missing loading information - load remover will not work for this version");
-            }
-
-            offsets.push((release_ref.clone(), has_dll, release_offsets.clone()));
-
-            cache.release_refs.insert(release.id, release_ref);
-            cache.assets.insert(
-                (binary_asset.id, binary_asset.size),
-                CacheAsset {
-                    id: symbols_asset.id,
-                    size: symbols_asset.size,
-                    hash: Some(hash),
-                    offsets: None,
-                    has_dll,
-                },
-            );
-            cache.assets.insert(
-                (symbols_asset.id, symbols_asset.size),
-                CacheAsset {
-                    id: symbols_asset.id,
-                    size: symbols_asset.size,
-                    hash: None,
-                    offsets: Some(release_offsets),
-                    has_dll,
-                },
-            );
-        };
+        let res = process_release(
+            &release,
+            &mut cache,
+            &repo_info,
+            &mut hashes,
+            &client,
+            &mut offsets,
+        ).await;
         if let Err(e) = res {
             eprintln!("could not process release {}: {}", release.name, e);
         }
@@ -226,6 +126,122 @@ async fn main() -> Result<()> {
     }
     // double newline for concatenation purposes
     output.write_all(b"    }\n}\n\n").await?;
+
+    Ok(())
+}
+
+async fn process_release(
+    release: &Release,
+    cache: &mut Cache,
+    repo_info: &Lazy<Result<RepoInfo>>,
+    hashes: &mut Vec<(String, String)>,
+    client: &Client,
+    offsets: &mut Vec<(String, bool, Offsets)>,
+) -> Result<()> {
+    let symbols_asset = match release
+        .assets
+        .iter()
+        .find(|asset| asset.name.contains("symbols-x64"))
+    {
+        Some(asset) => asset,
+        None => Err(anyhow::anyhow!(
+            "Release {} is missing debug symbols",
+            release.name
+        ))?,
+    };
+
+    let binary_asset = match release
+        .assets
+        .iter()
+        .find(|asset| asset.name.contains("windows-portable-x64"))
+    {
+        Some(asset) => asset,
+        None => Err(anyhow::anyhow!(
+            "Release {} is missing binaries",
+            release.name
+        ))?,
+    };
+
+    let release_ref = match cache.release_refs.get(&release.id) {
+        Some(cached) => cached.clone(),
+        None => {
+            let info = match &**repo_info {
+                Ok(info) => info,
+                Err(e) => Err(anyhow::anyhow!("could not clone repository: {}", e))?,
+            };
+            let reference = info
+                .repo
+                .find_reference(&format!("refs/tags/{}", release.tag_name))?;
+            let commit = reference.peel_to_commit()?;
+            let sha = commit.id().to_string();
+            format!("{} ({})", release.tag_name, &sha[..7])
+        }
+    };
+
+    println!("  Downloading binaries for {}", release_ref);
+    let (hash, has_dll) = match cache
+        .assets
+        .get(&(binary_asset.id, binary_asset.size))
+        .and_then(|cached| cached.hash.as_ref().map(|hash| (hash, cached.has_dll)))
+    {
+        Some((hash, has_dll)) => (hash.clone(), has_dll),
+        None => process_binary(client, binary_asset).await?,
+    };
+    hashes.push((release_ref.clone(), hash.clone()));
+
+    println!("  Downloading symbols for {}", release_ref);
+    let release_offsets = match cache
+        .assets
+        .get(&(symbols_asset.id, symbols_asset.size))
+        .and_then(|cached| cached.offsets.as_ref())
+    {
+        Some(cached) => {
+            let mut cached = cached.clone();
+            if !cached.autosplitter_will_work() {
+                process_symbols(client, symbols_asset, &mut cached).await?;
+            }
+
+            cached
+        }
+        _ if release.id == 202370656 => {
+            let mut offsets = Offsets::default();
+            process_symbols(client, symbols_asset, &mut offsets).await?;
+            offsets
+        }
+        _ => return Ok(()),
+    };
+
+    if !release_offsets.autosplitter_will_work() {
+        println!("    Warning: offsets state not valid - parts of the autosplitter may not work for this version");
+    }
+
+    if !release_offsets.load_remover_will_work() {
+        println!("    Warning: missing loading information - load remover will not work for this version");
+    }
+
+    offsets.push((release_ref.clone(), has_dll, release_offsets.clone()));
+
+    cache.release_refs.insert(release.id, release_ref);
+    cache.assets.insert(
+        (binary_asset.id, binary_asset.size),
+        CacheAsset {
+            id: symbols_asset.id,
+            size: symbols_asset.size,
+            hash: Some(hash),
+            offsets: None,
+            has_dll,
+        },
+    );
+    cache.assets.insert(
+        (symbols_asset.id, symbols_asset.size),
+        CacheAsset {
+            id: symbols_asset.id,
+            size: symbols_asset.size,
+            hash: None,
+            offsets: Some(release_offsets),
+            has_dll,
+        },
+    );
 
     Ok(())
 }
