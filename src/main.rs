@@ -461,11 +461,11 @@ impl Offsets {
             self.game_state_completed_value,
             self.game_state_is_pointer,
         ) {
-            let mut offsets = vec![state_offset as usize, field_offset as usize];
-
-            if is_pointer {
-                offsets.insert(1, 0);
-            }
+            let offsets = if is_pointer {
+                vec![state_offset as usize, field_offset as usize]
+            } else {
+                vec![state_offset as usize + field_offset as usize]
+            };
 
             self.write_offset(
                 writer,
