@@ -21,8 +21,6 @@ jobs:
         cargo run --release
         cat OpenRCT2_header.asl OpenRCT2_post.asl > OpenRCT2.asl
     - name: Commit
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
