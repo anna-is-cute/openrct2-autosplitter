@@ -27,7 +27,7 @@ async fn main() -> Result<()> {
 
     println!("Fetching releases...");
     let releases: Vec<Release> = client
-        .get("https://api.github.com/repos/OpenRCT2/OpenRCT2/releases")
+        .get("https://api.github.com/repos/OpenRCT2/OpenRCT2/releases?per_page=100")
         .header("User-Agent", "openrct2-autosplitter generator")
         .header("Accept", "application/vnd.github.v3+json")
         .send()
@@ -117,9 +117,9 @@ async fn main() -> Result<()> {
             {
                 Some(cached) => {
                     let mut cached = cached.clone();
-                    // if !cached.is_valid() {
-                    process_symbols(&client, symbols_asset, &mut cached).await?;
-                    // }
+                    if !cached.is_valid() {
+                        process_symbols(&client, symbols_asset, &mut cached).await?;
+                    }
 
                     cached
                 }
@@ -278,34 +278,31 @@ async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) 
             let globals = pdb.global_symbols()?;
             let mut iter = globals.iter();
             while let Ok(Some(symbol)) = iter.next() {
-                match symbol.parse() {
-                    Ok(SymbolData::Data(d)) => {
-                        let field = match d.name.to_string().as_ref() {
-                            "gScreenFlags" => &mut offsets.screen_flags,
-                            "gScenarioCompletedCompanyValue" => &mut offsets.completed_value,
-                            "OpenRCT2::_gameState" => {
-                                offsets.game_state_is_pointer = Some(true);
+                if let Ok(SymbolData::Data(d)) = symbol.parse() {
+                    let field = match d.name.to_string().as_ref() {
+                        "gScreenFlags" => &mut offsets.screen_flags,
+                        "gScenarioCompletedCompanyValue" => &mut offsets.completed_value,
+                        "OpenRCT2::_gameState" => {
+                            offsets.game_state_is_pointer = Some(true);
 
-                                &mut offsets.game_state
-                            }
-                            "_gameState" => {
-                                offsets.game_state_is_pointer = Some(false);
-
-                                &mut offsets.game_state
-                            }
-                            "_mapChangedExpected" => &mut offsets.map_changed_expected,
-                            _ => continue,
-                        };
-
-                        if field.is_some() {
-                            continue;
+                            &mut offsets.game_state
                         }
+                        "_gameState" => {
+                            offsets.game_state_is_pointer = Some(false);
 
-                        if let Some(offset) = d.offset.to_rva(&addr_map) {
-                            *field = Some(offset.0);
+                            &mut offsets.game_state
                         }
+                        "_mapChangedExpected" => &mut offsets.map_changed_expected,
+                        _ => continue,
+                    };
+
+                    if field.is_some() {
+                        continue;
                     }
-                    _ => {}
+
+                    if let Some(offset) = d.offset.to_rva(&addr_map) {
+                        *field = Some(offset.0);
+                    }
                 }
             }
         }
@@ -412,11 +409,8 @@ impl Offsets {
         let has_completed_value = self.completed_value.is_some();
         let has_game_state_data =
             self.game_state.is_some() && self.game_state_completed_value.is_some();
-        let has_pointer_info = self.game_state_is_pointer.is_some();
         let has_map_change = self.map_changed_expected.is_some();
-        has_screen_flags
-            && (has_completed_value ^ (has_game_state_data && has_pointer_info))
-            && has_map_change
+        has_screen_flags && (has_completed_value ^ has_game_state_data) && has_map_change
     }
 
     async fn write_offset<W: AsyncWrite + Unpin>(
