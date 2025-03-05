@@ -496,7 +496,8 @@
             size: 34012659,
             offsets: Some((
                 screen_flags: Some(16414088),
-                openrct2_game_state: Some(14456224),
+                game_state: Some(14456224),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(2224),
             )),
             hash: None,
@@ -507,7 +508,8 @@
             size: 34394341,
             offsets: Some((
                 screen_flags: Some(32480952),
-                openrct2_game_state: Some(14472608),
+                game_state: Some(14472608),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(2320),
             )),
             hash: None,
@@ -525,7 +527,8 @@
             size: 34435723,
             offsets: Some((
                 screen_flags: Some(66066696),
-                openrct2_game_state: Some(14488992),
+                game_state: Some(14488992),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(3480),
             )),
             hash: None,
@@ -543,7 +546,8 @@
             size: 34571585,
             offsets: Some((
                 screen_flags: Some(66090696),
-                openrct2_game_state: Some(14468480),
+                game_state: Some(14468480),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(3552),
             )),
             hash: None,
@@ -568,7 +572,8 @@
             size: 34722957,
             offsets: Some((
                 screen_flags: Some(66317944),
-                openrct2_game_state: Some(14693760),
+                game_state: Some(14693760),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(3552),
             )),
             hash: None,
@@ -579,7 +584,8 @@
             size: 35076534,
             offsets: Some((
                 screen_flags: Some(66311205),
-                openrct2_game_state: Some(14701872),
+                game_state: Some(14701872),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(3552),
             )),
             hash: None,
@@ -597,7 +603,8 @@
             size: 35063461,
             offsets: Some((
                 screen_flags: Some(65969973),
-                openrct2_game_state: Some(14357808),
+                game_state: Some(14357808),
+                game_state_is_pointer: Some(false),
                 game_state_completed_value: Some(3552),
             )),
             hash: None,
@@ -622,7 +629,8 @@
             size: 34763324,
             offsets: Some((
                 screen_flags: Some(16508645),
-                openrct2_game_state: Some(15127712),
+                game_state: Some(15127712),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,
@@ -640,7 +648,8 @@
             size: 36436774,
             offsets: Some((
                 screen_flags: Some(17137445),
-                openrct2_game_state: Some(17235552),
+                game_state: Some(17235552),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,
@@ -651,7 +660,8 @@
             size: 35079706,
             offsets: Some((
                 screen_flags: Some(16821669),
-                openrct2_game_state: Some(15327072),
+                game_state: Some(15327072),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,
@@ -676,7 +686,8 @@
             size: 35323112,
             offsets: Some((
                 screen_flags: Some(16907765),
-                openrct2_game_state: Some(15413440),
+                game_state: Some(15413440),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,
@@ -694,7 +705,8 @@
             size: 35644903,
             offsets: Some((
                 screen_flags: Some(16909125),
-                openrct2_game_state: Some(15528464),
+                game_state: Some(15528464),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,
@@ -712,7 +724,8 @@
             size: 35646126,
             offsets: Some((
                 screen_flags: Some(16909125),
-                openrct2_game_state: Some(15528464),
+                game_state: Some(15528464),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,
@@ -723,7 +736,8 @@
             size: 35629156,
             offsets: Some((
                 screen_flags: Some(16913221),
-                openrct2_game_state: Some(15532560),
+                game_state: Some(15532560),
+                game_state_is_pointer: Some(true),
                 game_state_completed_value: Some(3584),
             )),
             hash: None,

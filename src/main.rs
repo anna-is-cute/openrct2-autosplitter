@@ -283,8 +283,16 @@ async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) 
                         let field = match d.name.to_string().as_ref() {
                             "gScreenFlags" => &mut offsets.screen_flags,
                             "gScenarioCompletedCompanyValue" => &mut offsets.completed_value,
-                            "OpenRCT2::_gameState" => &mut offsets.openrct2_game_state,
-                            "_gameState" => &mut offsets.openrct2_game_state,
+                            "OpenRCT2::_gameState" => {
+                                offsets.game_state_is_pointer = Some(true);
+
+                                &mut offsets.game_state
+                            }
+                            "_gameState" => {
+                                offsets.game_state_is_pointer = Some(false);
+
+                                &mut offsets.game_state
+                            }
                             _ => continue,
                         };
 
@@ -384,7 +392,10 @@ struct Offsets {
     completed_value: Option<u32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    openrct2_game_state: Option<u32>,
+    game_state: Option<u32>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    game_state_is_pointer: Option<bool>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     game_state_completed_value: Option<u64>,
@@ -395,8 +406,9 @@ impl Offsets {
         let has_screen_flags = self.screen_flags.is_some();
         let has_completed_value = self.completed_value.is_some();
         let has_game_state_data =
-            self.openrct2_game_state.is_some() && self.game_state_completed_value.is_some();
-        has_screen_flags && (has_completed_value ^ has_game_state_data)
+            self.game_state.is_some() && self.game_state_completed_value.is_some();
+        let has_pointer_info = self.game_state_is_pointer.is_some();
+        has_screen_flags && (has_completed_value ^ (has_game_state_data && has_pointer_info))
     }
 
     async fn write_offset<W: AsyncWrite + Unpin>(
@@ -444,15 +456,23 @@ impl Offsets {
             .await?;
         }
 
-        if let (Some(state_offset), Some(field_offset)) =
-            (self.openrct2_game_state, self.game_state_completed_value)
-        {
+        if let (Some(state_offset), Some(field_offset), Some(is_pointer)) = (
+            self.game_state,
+            self.game_state_completed_value,
+            self.game_state_is_pointer,
+        ) {
+            let mut offsets = vec![state_offset as usize, field_offset as usize];
+
+            if is_pointer {
+                offsets.insert(1, 0);
+            }
+
             self.write_offset(
                 writer,
                 has_dll,
                 "gScenarioCompletedCompanyValue",
                 "ulong",
-                &[state_offset as usize, 0, field_offset as usize],
+                &offsets,
             )
             .await?;
         }

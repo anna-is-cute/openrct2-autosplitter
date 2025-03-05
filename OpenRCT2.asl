@@ -38,37 +38,37 @@ state("openrct2", "v0.4.15 (c7c8fad)") {
 
 state("openrct2", "v0.4.14 (18492da)") {
     byte gScreenFlags : 0x3ee9f35;
-    ulong gScenarioCompletedCompanyValue : 0xdb1530, 0x0, 0xde0;
+    ulong gScenarioCompletedCompanyValue : 0xdb1530, 0xde0;
 }
 
 state("openrct2", "v0.4.13 (caacd4d)") {
     byte gScreenFlags : 0x3f3d425;
-    ulong gScenarioCompletedCompanyValue : 0xe05530, 0x0, 0xde0;
+    ulong gScenarioCompletedCompanyValue : 0xe05530, 0xde0;
 }
 
 state("openrct2", "v0.4.12 (1b5ff88)") {
     byte gScreenFlags : 0x3f3ee78;
-    ulong gScenarioCompletedCompanyValue : 0xe03580, 0x0, 0xde0;
+    ulong gScenarioCompletedCompanyValue : 0xe03580, 0xde0;
 }
 
 state("openrct2", "v0.4.11 (18d2b5e)") {
     byte gScreenFlags : 0x3f076c8;
-    ulong gScenarioCompletedCompanyValue : 0xdcc580, 0x0, 0xde0;
+    ulong gScenarioCompletedCompanyValue : 0xdcc580, 0xde0;
 }
 
 state("openrct2", "v0.4.10 (e55d761)") {
     byte gScreenFlags : 0x3f01908;
-    ulong gScenarioCompletedCompanyValue : 0xdd15a0, 0x0, 0xd98;
+    ulong gScenarioCompletedCompanyValue : 0xdd15a0, 0xd98;
 }
 
 state("openrct2", "v0.4.9 (a172405)") {
     byte gScreenFlags : 0x1ef9eb8;
-    ulong gScenarioCompletedCompanyValue : 0xdcd5a0, 0x0, 0x910;
+    ulong gScenarioCompletedCompanyValue : 0xdcd5a0, 0x910;
 }
 
 state("openrct2", "v0.4.8 (05efdb2)") {
     byte gScreenFlags : 0xfa7588;
-    ulong gScenarioCompletedCompanyValue : 0xdc95a0, 0x0, 0x8b0;
+    ulong gScenarioCompletedCompanyValue : 0xdc95a0, 0x8b0;
 }
 
 state("openrct2", "v0.4.7 (0e8d46e)") {
