@@ -132,7 +132,7 @@ async fn main() -> Result<()> {
             };
 
             if !release_offsets.is_valid() {
-                println!("    Warning: offsets state not valid - autosplitter will not work for this version");
+                println!("    Warning: offsets state not valid - parts of the autosplitter may not work for this version");
             }
 
             offsets.push((release_ref.clone(), has_dll, release_offsets.clone()));
@@ -385,6 +385,7 @@ struct CacheAsset {
 }
 
 #[derive(Default, Deserialize, Serialize, Clone)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 struct Offsets {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     screen_flags: Option<u32>,
@@ -485,8 +486,14 @@ impl Offsets {
         }
 
         if let Some(offset) = self.map_changed_expected {
-            self.write_offset(writer, has_dll, "_mapChangedExpected", "byte", &[offset])
-                .await?;
+            self.write_offset(
+                writer,
+                has_dll,
+                "_mapChangedExpected",
+                "byte",
+                &[offset as usize],
+            )
+            .await?;
         }
 
         Ok(())

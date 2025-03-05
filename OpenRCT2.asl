@@ -4,111 +4,133 @@
 state("openrct2", "v0.4.20 (1c1b6d4)") {
     byte gScreenFlags : 0x1021345;
     ulong gScenarioCompletedCompanyValue : 0xed0210, 0xe00;
+    byte _mapChangedExpected : 0xed01e1;
 }
 
 state("openrct2", "v0.4.19.1 (455f22b)") {
     byte gScreenFlags : 0x1020345;
     ulong gScenarioCompletedCompanyValue : 0xecf210, 0xe00;
+    byte _mapChangedExpected : 0xecf1e1;
 }
 
 state("openrct2", "v0.4.19 (088081d)") {
     byte gScreenFlags : 0x1020345;
     ulong gScenarioCompletedCompanyValue : 0xecf210, 0xe00;
+    byte _mapChangedExpected : 0xecf1e1;
 }
 
 state("openrct2", "v0.4.18 (8c19879)") {
     byte gScreenFlags : 0x101fdf5;
     ulong gScenarioCompletedCompanyValue : 0xeb30c0, 0xe00;
+    byte _mapChangedExpected : 0xeb3099;
 }
 
 state("openrct2", "v0.4.17 (60dc190)") {
     byte gScreenFlags : 0x100ada5;
     ulong gScenarioCompletedCompanyValue : 0xe9df60, 0xe00;
+    byte _mapChangedExpected : 0xe9df39;
 }
 
 state("openrct2", "v0.4.16 (c1082a3)") {
     byte gScreenFlags : 0x1057f25;
     ulong gScenarioCompletedCompanyValue : 0x106fe60, 0xe00;
+    byte _mapChangedExpected : 0x105d35c;
 }
 
 state("openrct2", "v0.4.15 (c7c8fad)") {
     byte gScreenFlags : 0xfbe6e5;
     ulong gScenarioCompletedCompanyValue : 0xe6d4a0, 0xe00;
+    byte _mapChangedExpected : 0xe6d479;
 }
 
 state("openrct2", "v0.4.14 (18492da)") {
     byte gScreenFlags : 0x3ee9f35;
     ulong gScenarioCompletedCompanyValue : 0xdb2310;
+    byte _mapChangedExpected : 0x3d98d11;
 }
 
 state("openrct2", "v0.4.13 (caacd4d)") {
     byte gScreenFlags : 0x3f3d425;
     ulong gScenarioCompletedCompanyValue : 0xe06310;
+    byte _mapChangedExpected : 0x3dec1e1;
 }
 
 state("openrct2", "v0.4.12 (1b5ff88)") {
     byte gScreenFlags : 0x3f3ee78;
     ulong gScenarioCompletedCompanyValue : 0xe04360;
+    byte _mapChangedExpected : 0x3dfca91;
 }
 
 state("openrct2", "v0.4.11 (18d2b5e)") {
     byte gScreenFlags : 0x3f076c8;
     ulong gScenarioCompletedCompanyValue : 0xdcd360;
+    byte _mapChangedExpected : 0x3dc4f21;
 }
 
 state("openrct2", "v0.4.10 (e55d761)") {
     byte gScreenFlags : 0x3f01908;
     ulong gScenarioCompletedCompanyValue : 0xdd2338;
+    byte _mapChangedExpected : 0x3dbf341;
 }
 
 state("openrct2", "v0.4.9 (a172405)") {
     byte gScreenFlags : 0x1ef9eb8;
     ulong gScenarioCompletedCompanyValue : 0xdcdeb0;
+    byte _mapChangedExpected : 0x1db56e1;
 }
 
 state("openrct2", "v0.4.8 (05efdb2)") {
     byte gScreenFlags : 0xfa7588;
     ulong gScenarioCompletedCompanyValue : 0xdc9e50;
+    byte _mapChangedExpected : 0xe62da1;
 }
 
 state("openrct2", "v0.4.7 (0e8d46e)") {
     byte gScreenFlags : 0xf8b418;
     ulong gScenarioCompletedCompanyValue : 0xf89798;
+    byte _mapChangedExpected : 0xe47455;
 }
 
 state("openrct2", "v0.4.6 (b40b5da)") {
     byte gScreenFlags : 0xfeb338;
     ulong gScenarioCompletedCompanyValue : 0xfe96b8;
+    byte _mapChangedExpected : 0xea7375;
 }
 
 state("openrct2", "v0.4.5 (76ca840)") {
     byte gScreenFlags : 0x100fb58;
     ulong gScenarioCompletedCompanyValue : 0x100ded8;
+    byte _mapChangedExpected : 0xecbb95;
 }
 
 state("openrct2", "v0.4.4 (9e4918c)") {
     byte gScreenFlags : 0x10c8d38;
     ulong gScenarioCompletedCompanyValue : 0x10c70b8;
+    byte _mapChangedExpected : 0xf71ab5;
 }
 
 state("openrct2", "v0.4.3 (285e0fc)") {
     byte gScreenFlags : 0xf864d0;
     ulong gScenarioCompletedCompanyValue : 0xf87b88;
+    byte _mapChangedExpected : 0x4869dc5;
 }
 
 state("openrct2", "v0.4.2 (8ceea45)") {
     byte gScreenFlags : 0xed3290;
     ulong gScenarioCompletedCompanyValue : 0xed4948;
+    byte _mapChangedExpected : 0x47b7743;
 }
 
 state("openrct2", "v0.4.1 (be518f4)") {
     byte gScreenFlags : 0xefc597;
     ulong gScenarioCompletedCompanyValue : 0xefdc50;
+    byte _mapChangedExpected : 0x47e207d;
 }
 
 state("openrct2", "v0.4.0 (c6302a1)") {
     byte gScreenFlags : 0xdecee8;
     ulong gScenarioCompletedCompanyValue : 0xdee5a0;
+    byte _mapChangedExpected : 0x46d66c0;
 }
 
 state("openrct2", "v0.3.5.1 (61c67af)") {
@@ -283,4 +305,8 @@ split {
     if (current.gScreenFlags == 0 && isComplete && !isFailed && wasIncomplete) {
         return true;
     }
+}
+
+isLoading {
+    return _mapChangedExpected == 1;
 }
