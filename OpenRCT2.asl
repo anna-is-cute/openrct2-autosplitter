@@ -3,58 +3,72 @@
 
 state("openrct2", "v0.4.20 (1c1b6d4)") {
     byte gScreenFlags : 0x1021345;
+    ulong gScenarioCompletedCompanyValue : 0xed0210, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.19.1 (455f22b)") {
     byte gScreenFlags : 0x1020345;
+    ulong gScenarioCompletedCompanyValue : 0xecf210, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.19 (088081d)") {
     byte gScreenFlags : 0x1020345;
+    ulong gScenarioCompletedCompanyValue : 0xecf210, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.18 (8c19879)") {
     byte gScreenFlags : 0x101fdf5;
+    ulong gScenarioCompletedCompanyValue : 0xeb30c0, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.17 (60dc190)") {
     byte gScreenFlags : 0x100ada5;
+    ulong gScenarioCompletedCompanyValue : 0xe9df60, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.16 (c1082a3)") {
     byte gScreenFlags : 0x1057f25;
+    ulong gScenarioCompletedCompanyValue : 0x106fe60, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.15 (c7c8fad)") {
     byte gScreenFlags : 0xfbe6e5;
+    ulong gScenarioCompletedCompanyValue : 0xe6d4a0, 0x0, 0xe00;
 }
 
 state("openrct2", "v0.4.14 (18492da)") {
     byte gScreenFlags : 0x3ee9f35;
+    ulong gScenarioCompletedCompanyValue : 0xdb1530, 0x0, 0xde0;
 }
 
 state("openrct2", "v0.4.13 (caacd4d)") {
     byte gScreenFlags : 0x3f3d425;
+    ulong gScenarioCompletedCompanyValue : 0xe05530, 0x0, 0xde0;
 }
 
 state("openrct2", "v0.4.12 (1b5ff88)") {
     byte gScreenFlags : 0x3f3ee78;
+    ulong gScenarioCompletedCompanyValue : 0xe03580, 0x0, 0xde0;
 }
 
 state("openrct2", "v0.4.11 (18d2b5e)") {
     byte gScreenFlags : 0x3f076c8;
+    ulong gScenarioCompletedCompanyValue : 0xdcc580, 0x0, 0xde0;
 }
 
 state("openrct2", "v0.4.10 (e55d761)") {
     byte gScreenFlags : 0x3f01908;
+    ulong gScenarioCompletedCompanyValue : 0xdd15a0, 0x0, 0xd98;
 }
 
 state("openrct2", "v0.4.9 (a172405)") {
     byte gScreenFlags : 0x1ef9eb8;
+    ulong gScenarioCompletedCompanyValue : 0xdcd5a0, 0x0, 0x910;
 }
 
 state("openrct2", "v0.4.8 (05efdb2)") {
     byte gScreenFlags : 0xfa7588;
+    ulong gScenarioCompletedCompanyValue : 0xdc95a0, 0x0, 0x8b0;
 }
 
 state("openrct2", "v0.4.7 (0e8d46e)") {

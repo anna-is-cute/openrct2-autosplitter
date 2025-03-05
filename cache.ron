@@ -52,20 +52,20 @@
         (4314317, 10717969): (
             id: 4314317,
             size: 10717969,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 16041252,
-                "gScreenFlags": 16043458,
-            }),
+            offsets: Some((
+                screen_flags: Some(16043458),
+                completed_value: Some(16041252),
+            )),
             hash: None,
             has_dll: true,
         ),
         (4541042, 10484181): (
             id: 4541042,
             size: 10484181,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 15972964,
-                "gScreenFlags": 9305171,
-            }),
+            offsets: Some((
+                screen_flags: Some(9305171),
+                completed_value: Some(15972964),
+            )),
             hash: None,
             has_dll: true,
         ),
@@ -86,20 +86,20 @@
         (6551802, 14507434): (
             id: 6551802,
             size: 14507434,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13246104,
-                "gScreenFlags": 10401110,
-            }),
+            offsets: Some((
+                screen_flags: Some(10401110),
+                completed_value: Some(13246104),
+            )),
             hash: None,
             has_dll: true,
         ),
         (7481656, 15069242): (
             id: 7481656,
             size: 15069242,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13182312,
-                "gScreenFlags": 10235566,
-            }),
+            offsets: Some((
+                screen_flags: Some(10235566),
+                completed_value: Some(13182312),
+            )),
             hash: None,
             has_dll: true,
         ),
@@ -113,10 +113,10 @@
         (8401593, 15300101): (
             id: 8401593,
             size: 15300101,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13328900,
-                "gScreenFlags": 10315626,
-            }),
+            offsets: Some((
+                screen_flags: Some(10315626),
+                completed_value: Some(13328900),
+            )),
             hash: None,
             has_dll: true,
         ),
@@ -130,10 +130,10 @@
         (11515920, 16603401): (
             id: 11515920,
             size: 16603401,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13565364,
-                "gScreenFlags": 10548799,
-            }),
+            offsets: Some((
+                screen_flags: Some(10548799),
+                completed_value: Some(13565364),
+            )),
             hash: None,
             has_dll: true,
         ),
@@ -147,10 +147,10 @@
         (13647679, 17637235): (
             id: 13647679,
             size: 17637235,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13078824,
-                "gScreenFlags": 10821622,
-            }),
+            offsets: Some((
+                screen_flags: Some(10821622),
+                completed_value: Some(13078824),
+            )),
             hash: None,
             has_dll: true,
         ),
@@ -164,10 +164,10 @@
         (15791206, 17902849): (
             id: 15791206,
             size: 17902849,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 14735908,
-                "gScreenFlags": 10906095,
-            }),
+            offsets: Some((
+                screen_flags: Some(10906095),
+                completed_value: Some(14735908),
+            )),
             hash: None,
             has_dll: true,
         ),
@@ -188,10 +188,10 @@
         (18963888, 19178627): (
             id: 18963888,
             size: 19178627,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13305504,
-                "gScreenFlags": 9479011,
-            }),
+            offsets: Some((
+                screen_flags: Some(9479011),
+                completed_value: Some(13305504),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -205,20 +205,20 @@
         (19919285, 19267292): (
             id: 19919285,
             size: 19267292,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 13330620,
-                "gScreenFlags": 9503603,
-            }),
+            offsets: Some((
+                screen_flags: Some(9503603),
+                completed_value: Some(13330620),
+            )),
             hash: None,
             has_dll: false,
         ),
         (23967739, 22282940): (
             id: 23967739,
             size: 22282940,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 10895164,
-                "gScreenFlags": 10884979,
-            }),
+            offsets: Some((
+                screen_flags: Some(10884979),
+                completed_value: Some(10895164),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -239,10 +239,10 @@
         (26254753, 23318380): (
             id: 26254753,
             size: 23318380,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 11405196,
-                "gScreenFlags": 11391331,
-            }),
+            offsets: Some((
+                screen_flags: Some(11391331),
+                completed_value: Some(11405196),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -256,10 +256,10 @@
         (27809411, 23586620): (
             id: 27809411,
             size: 23586620,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 11562092,
-                "gScreenFlags": 11552162,
-            }),
+            offsets: Some((
+                screen_flags: Some(11552162),
+                completed_value: Some(11562092),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -273,10 +273,10 @@
         (33414185, 25591553): (
             id: 33414185,
             size: 25591553,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 12167100,
-                "gScreenFlags": 12156036,
-            }),
+            offsets: Some((
+                screen_flags: Some(12156036),
+                completed_value: Some(12167100),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -290,10 +290,10 @@
         (40615064, 25322834): (
             id: 40615064,
             size: 25322834,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 12233232,
-                "gScreenFlags": 12225860,
-            }),
+            offsets: Some((
+                screen_flags: Some(12225860),
+                completed_value: Some(12233232),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -307,10 +307,10 @@
         (40999751, 25321226): (
             id: 40999751,
             size: 25321226,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 12233248,
-                "gScreenFlags": 12225876,
-            }),
+            offsets: Some((
+                screen_flags: Some(12225876),
+                completed_value: Some(12233248),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -324,10 +324,10 @@
         (48772153, 24995496): (
             id: 48772153,
             size: 24995496,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 11934920,
-                "gScreenFlags": 11927539,
-            }),
+            offsets: Some((
+                screen_flags: Some(11927539),
+                completed_value: Some(11934920),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -341,10 +341,10 @@
         (49995638, 24910447): (
             id: 49995638,
             size: 24910447,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 11924952,
-                "gScreenFlags": 11917571,
-            }),
+            offsets: Some((
+                screen_flags: Some(11917571),
+                completed_value: Some(11924952),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -358,10 +358,10 @@
         (63607799, 32919712): (
             id: 63607799,
             size: 32919712,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 14607776,
-                "gScreenFlags": 14601960,
-            }),
+            offsets: Some((
+                screen_flags: Some(14601960),
+                completed_value: Some(14607776),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -375,10 +375,10 @@
         (70542814, 34912291): (
             id: 70542814,
             size: 34912291,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 15719504,
-                "gScreenFlags": 15713687,
-            }),
+            offsets: Some((
+                screen_flags: Some(15713687),
+                completed_value: Some(15719504),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -392,10 +392,10 @@
         (80029910, 36652396): (
             id: 80029910,
             size: 36652396,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 15550792,
-                "gScreenFlags": 15544976,
-            }),
+            offsets: Some((
+                screen_flags: Some(15544976),
+                completed_value: Some(15550792),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -409,20 +409,20 @@
         (88184613, 38059523): (
             id: 88184613,
             size: 38059523,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 16284552,
-                "gScreenFlags": 16278736,
-            }),
+            offsets: Some((
+                screen_flags: Some(16278736),
+                completed_value: Some(16284552),
+            )),
             hash: None,
             has_dll: false,
         ),
         (101327845, 40557134): (
             id: 101327845,
             size: 40557134,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 17592504,
-                "gScreenFlags": 17599800,
-            }),
+            offsets: Some((
+                screen_flags: Some(17599800),
+                completed_value: Some(17592504),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -443,10 +443,10 @@
         (107214936, 36129688): (
             id: 107214936,
             size: 36129688,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 16834264,
-                "gScreenFlags": 16841560,
-            }),
+            offsets: Some((
+                screen_flags: Some(16841560),
+                completed_value: Some(16834264),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -460,20 +460,20 @@
         (124372253, 33905230): (
             id: 124372253,
             size: 33905230,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 16684728,
-                "gScreenFlags": 16692024,
-            }),
+            offsets: Some((
+                screen_flags: Some(16692024),
+                completed_value: Some(16684728),
+            )),
             hash: None,
             has_dll: false,
         ),
         (143160635, 33879909): (
             id: 143160635,
             size: 33879909,
-            offsets: Some({
-                "gScenarioCompletedCompanyValue": 16291736,
-                "gScreenFlags": 16299032,
-            }),
+            offsets: Some((
+                screen_flags: Some(16299032),
+                completed_value: Some(16291736),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -494,18 +494,22 @@
         (149755005, 34012659): (
             id: 149755005,
             size: 34012659,
-            offsets: Some({
-                "gScreenFlags": 16414088,
-            }),
+            offsets: Some((
+                screen_flags: Some(16414088),
+                openrct2_game_state: Some(14456224),
+                game_state_completed_value: Some(2224),
+            )),
             hash: None,
             has_dll: false,
         ),
         (154591143, 34394341): (
             id: 154591143,
             size: 34394341,
-            offsets: Some({
-                "gScreenFlags": 32480952,
-            }),
+            offsets: Some((
+                screen_flags: Some(32480952),
+                openrct2_game_state: Some(14472608),
+                game_state_completed_value: Some(2320),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -519,9 +523,11 @@
         (159953414, 34435723): (
             id: 159953414,
             size: 34435723,
-            offsets: Some({
-                "gScreenFlags": 66066696,
-            }),
+            offsets: Some((
+                screen_flags: Some(66066696),
+                openrct2_game_state: Some(14488992),
+                game_state_completed_value: Some(3480),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -535,9 +541,11 @@
         (166132362, 34571585): (
             id: 166132362,
             size: 34571585,
-            offsets: Some({
-                "gScreenFlags": 66090696,
-            }),
+            offsets: Some((
+                screen_flags: Some(66090696),
+                openrct2_game_state: Some(14468480),
+                game_state_completed_value: Some(3552),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -558,18 +566,22 @@
         (178196958, 34722957): (
             id: 178196958,
             size: 34722957,
-            offsets: Some({
-                "gScreenFlags": 66317944,
-            }),
+            offsets: Some((
+                screen_flags: Some(66317944),
+                openrct2_game_state: Some(14693760),
+                game_state_completed_value: Some(3552),
+            )),
             hash: None,
             has_dll: false,
         ),
         (183849387, 35076534): (
             id: 183849387,
             size: 35076534,
-            offsets: Some({
-                "gScreenFlags": 66311205,
-            }),
+            offsets: Some((
+                screen_flags: Some(66311205),
+                openrct2_game_state: Some(14701872),
+                game_state_completed_value: Some(3552),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -583,9 +595,11 @@
         (189758692, 35063461): (
             id: 189758692,
             size: 35063461,
-            offsets: Some({
-                "gScreenFlags": 65969973,
-            }),
+            offsets: Some((
+                screen_flags: Some(65969973),
+                openrct2_game_state: Some(14357808),
+                game_state_completed_value: Some(3552),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -606,9 +620,11 @@
         (197230705, 34763324): (
             id: 197230705,
             size: 34763324,
-            offsets: Some({
-                "gScreenFlags": 16508645,
-            }),
+            offsets: Some((
+                screen_flags: Some(16508645),
+                openrct2_game_state: Some(15127712),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -622,18 +638,22 @@
         (203804942, 36436774): (
             id: 203804942,
             size: 36436774,
-            offsets: Some({
-                "gScreenFlags": 17137445,
-            }),
+            offsets: Some((
+                screen_flags: Some(17137445),
+                openrct2_game_state: Some(17235552),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),
         (211921423, 35079706): (
             id: 211921423,
             size: 35079706,
-            offsets: Some({
-                "gScreenFlags": 16821669,
-            }),
+            offsets: Some((
+                screen_flags: Some(16821669),
+                openrct2_game_state: Some(15327072),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -654,9 +674,11 @@
         (218960624, 35323112): (
             id: 218960624,
             size: 35323112,
-            offsets: Some({
-                "gScreenFlags": 16907765,
-            }),
+            offsets: Some((
+                screen_flags: Some(16907765),
+                openrct2_game_state: Some(15413440),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -670,9 +692,11 @@
         (225482258, 35644903): (
             id: 225482258,
             size: 35644903,
-            offsets: Some({
-                "gScreenFlags": 16909125,
-            }),
+            offsets: Some((
+                screen_flags: Some(16909125),
+                openrct2_game_state: Some(15528464),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),
@@ -686,18 +710,22 @@
         (225961623, 35646126): (
             id: 225961623,
             size: 35646126,
-            offsets: Some({
-                "gScreenFlags": 16909125,
-            }),
+            offsets: Some((
+                screen_flags: Some(16909125),
+                openrct2_game_state: Some(15528464),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),
         (232501759, 35629156): (
             id: 232501759,
             size: 35629156,
-            offsets: Some({
-                "gScreenFlags": 16913221,
-            }),
+            offsets: Some((
+                screen_flags: Some(16913221),
+                openrct2_game_state: Some(15532560),
+                game_state_completed_value: Some(3584),
+            )),
             hash: None,
             has_dll: false,
         ),

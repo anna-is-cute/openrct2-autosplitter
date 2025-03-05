@@ -2,40 +2,32 @@
 
 use std::{
     collections::BTreeMap,
+    io::{Cursor, Read},
     path::Path,
 };
-use std::io::{Cursor, Read};
 
 use anyhow::{Context, Result};
-use git2::build::RepoBuilder;
-use git2::Repository;
+use git2::{build::RepoBuilder, Repository};
 use once_cell::unsync::Lazy;
-use pdb::{FallibleIterator, PDB as Pdb, SymbolData};
+use pdb::{FallibleIterator, SymbolData, TypeData, PDB as Pdb};
 use reqwest::Client;
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use tempfile::TempDir;
-use tokio::fs::{File, OpenOptions};
-use tokio::io::AsyncWriteExt;
+use tokio::{
+    fs::{File, OpenOptions},
+    io::{AsyncWrite, AsyncWriteExt},
+};
 use zip::ZipArchive;
-
-const TARGETS: &[&str] = &[
-    "gScreenFlags",
-    "gScenarioCompletedCompanyValue",
-];
-
-const TYPES: &[&str] = &[
-    "byte",
-    "ulong",
-];
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let client = Client::new();
 
     println!("Fetching releases...");
-    let releases: Vec<Release> = client.get("https://api.github.com/repos/OpenRCT2/OpenRCT2/releases")
+    let releases: Vec<Release> = client
+        .get("https://api.github.com/repos/OpenRCT2/OpenRCT2/releases")
         .header("User-Agent", "openrct2-autosplitter generator")
         .header("Accept", "application/vnd.github.v3+json")
         .send()
@@ -51,8 +43,12 @@ async fn main() -> Result<()> {
 
     println!("Creating output file...");
     let mut output = File::create("OpenRCT2_header.asl").await?;
-    output.write_all(b"// OpenRCT2 Autosplitter by anna\n").await?;
-    output.write_all(b"// https://git.anna.lgbt/anna/openrct2-autosplitter\n\n").await?;
+    output
+        .write_all(b"// OpenRCT2 Autosplitter by anna\n")
+        .await?;
+    output
+        .write_all(b"// https://git.anna.lgbt/anna/openrct2-autosplitter\n\n")
+        .await?;
 
     println!("Getting cache...");
     let mut cache = Cache::get().await?;
@@ -62,20 +58,28 @@ async fn main() -> Result<()> {
     let mut offsets = Vec::with_capacity(releases.len());
     for release in releases {
         let res: Result<()> = try {
-            let symbols_asset = match release.assets
+            let symbols_asset = match release
+                .assets
                 .iter()
                 .find(|asset| asset.name.contains("symbols-x64"))
             {
                 Some(asset) => asset,
-                None => Err(anyhow::anyhow!("Release {} is missing debug symbols", release.name))?,
+                None => Err(anyhow::anyhow!(
+                    "Release {} is missing debug symbols",
+                    release.name
+                ))?,
             };
 
-            let binary_asset = match release.assets
+            let binary_asset = match release
+                .assets
                 .iter()
                 .find(|asset| asset.name.contains("windows-portable-x64"))
             {
                 Some(asset) => asset,
-                None => Err(anyhow::anyhow!("Release {} is missing binaries", release.name))?,
+                None => Err(anyhow::anyhow!(
+                    "Release {} is missing binaries",
+                    release.name
+                ))?,
             };
 
             let release_ref = match cache.release_refs.get(&release.id) {
@@ -85,7 +89,9 @@ async fn main() -> Result<()> {
                         Ok(info) => info,
                         Err(e) => Err(anyhow::anyhow!("could not clone repository: {}", e))?,
                     };
-                    let reference = info.repo.find_reference(&format!("refs/tags/{}", release.tag_name))?;
+                    let reference = info
+                        .repo
+                        .find_reference(&format!("refs/tags/{}", release.tag_name))?;
                     let commit = reference.peel_to_commit()?;
                     let sha = commit.id().to_string();
                     format!("{} ({})", release.tag_name, &sha[..7])
@@ -93,34 +99,65 @@ async fn main() -> Result<()> {
             };
 
             println!("  Downloading binaries for {}", release_ref);
-            let (hash, has_dll) = match cache.assets.get(&(binary_asset.id, binary_asset.size)).and_then(|cached| cached.hash.as_ref().map(|hash| (hash, cached.has_dll))) {
+            let (hash, has_dll) = match cache
+                .assets
+                .get(&(binary_asset.id, binary_asset.size))
+                .and_then(|cached| cached.hash.as_ref().map(|hash| (hash, cached.has_dll)))
+            {
                 Some((hash, has_dll)) => (hash.clone(), has_dll),
                 None => process_binary(&client, binary_asset).await?,
             };
             hashes.push((release_ref.clone(), hash.clone()));
 
             println!("  Downloading symbols for {}", release_ref);
-            let release_offsets = match cache.assets.get(&(symbols_asset.id, symbols_asset.size)).and_then(|cached| cached.offsets.as_ref()) {
-                Some(cached) if TARGETS.iter().all(|target| cached.contains_key(&**target)) => cached.clone(),
-                _ => process_symbols(&client, symbols_asset).await?,
+            let release_offsets = match cache
+                .assets
+                .get(&(symbols_asset.id, symbols_asset.size))
+                .and_then(|cached| cached.offsets.as_ref())
+            {
+                Some(cached) => {
+                    let mut cached = cached.clone();
+                    if !cached.is_valid() {
+                        process_symbols(&client, symbols_asset, &mut cached).await?;
+                    }
+
+                    cached
+                }
+                _ if release.id == 202370656 => {
+                    let mut offsets = Offsets::default();
+                    process_symbols(&client, symbols_asset, &mut offsets).await?;
+                    offsets
+                }
+                _ => continue,
             };
+
+            if !release_offsets.is_valid() {
+                println!("    Warning: offsets state not valid - autosplitter will not work for this version");
+            }
+
             offsets.push((release_ref.clone(), has_dll, release_offsets.clone()));
 
             cache.release_refs.insert(release.id, release_ref);
-            cache.assets.insert((binary_asset.id, binary_asset.size), CacheAsset {
-                id: symbols_asset.id,
-                size: symbols_asset.size,
-                hash: Some(hash),
-                offsets: None,
-                has_dll,
-            });
-            cache.assets.insert((symbols_asset.id, symbols_asset.size), CacheAsset {
-                id: symbols_asset.id,
-                size: symbols_asset.size,
-                hash: None,
-                offsets: Some(release_offsets),
-                has_dll,
-            });
+            cache.assets.insert(
+                (binary_asset.id, binary_asset.size),
+                CacheAsset {
+                    id: symbols_asset.id,
+                    size: symbols_asset.size,
+                    hash: Some(hash),
+                    offsets: None,
+                    has_dll,
+                },
+            );
+            cache.assets.insert(
+                (symbols_asset.id, symbols_asset.size),
+                CacheAsset {
+                    id: symbols_asset.id,
+                    size: symbols_asset.size,
+                    hash: None,
+                    offsets: Some(release_offsets),
+                    has_dll,
+                },
+            );
         };
         if let Err(e) = res {
             eprintln!("could not process release {}: {}", release.name, e);
@@ -131,24 +168,24 @@ async fn main() -> Result<()> {
     cache.save().await?;
 
     for (release_ref, has_dll, offsets) in offsets {
-        output.write_all(format!("state(\"openrct2\", \"{}\") {{\n", release_ref).as_bytes()).await?;
-        for i in 0..TARGETS.len() {
-            let name = TARGETS[i];
-            let kind = TYPES[i];
-            if let Some(offset) = offsets.get(name) {
-                if has_dll {
-                    output.write_all(format!("    {} {} : \"openrct2.dll\", 0x{:x};\n", kind, name, offset).as_bytes()).await?;
-                } else {
-                    output.write_all(format!("    {} {} : 0x{:x};\n", kind, name, offset).as_bytes()).await?;
-                }
-            }
-        }
+        output
+            .write_all(format!("state(\"openrct2\", \"{}\") {{\n", release_ref).as_bytes())
+            .await?;
+        offsets.write_offsets(&mut output, has_dll).await?;
         output.write_all(b"}\n\n").await?;
     }
 
     output.write_all(b"init {\n    var module = modules.First();\n    string hash = vars.CalcModuleHash(module);\n    switch (hash) {\n").await?;
     for (release_ref, hash) in hashes {
-        output.write_all(format!("        case \"{}\":\n            version = \"{}\";\n            break;\n", hash, release_ref).as_bytes()).await?;
+        output
+            .write_all(
+                format!(
+                    "        case \"{}\":\n            version = \"{}\";\n            break;\n",
+                    hash, release_ref
+                )
+                .as_bytes(),
+            )
+            .await?;
     }
     // double newline for concatenation purposes
     output.write_all(b"    }\n}\n\n").await?;
@@ -157,7 +194,12 @@ async fn main() -> Result<()> {
 }
 
 async fn get_asset_zip(client: &Client, asset: &Asset) -> Result<ZipArchive<Cursor<Vec<u8>>>> {
-    let zip_bytes = client.get(&asset.browser_download_url).send().await?.bytes().await?;
+    let zip_bytes = client
+        .get(&asset.browser_download_url)
+        .send()
+        .await?
+        .bytes()
+        .await?;
     let zip = ZipArchive::new(Cursor::new(zip_bytes.to_vec()))?;
     Ok(zip)
 }
@@ -173,11 +215,15 @@ async fn process_binary(client: &Client, asset: &Asset) -> Result<(String, bool)
     Ok((hex::encode(Sha256::digest(&*raw_exe)), has_dll))
 }
 
-async fn process_symbols(client: &Client, asset: &Asset) -> Result<BTreeMap<String, u32>> {
-    let zip_bytes = client.get(&asset.browser_download_url).send().await?.bytes().await?;
+async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) -> Result<()> {
+    let zip_bytes = client
+        .get(&asset.browser_download_url)
+        .send()
+        .await?
+        .bytes()
+        .await?;
     let mut zip = ZipArchive::new(Cursor::new(&*zip_bytes))?;
     let names: Vec<String> = zip.file_names().map(ToString::to_string).collect();
-    let mut offsets = BTreeMap::new();
     for name in names {
         if name.ends_with(".pdb") {
             let mut zip_pdb = zip.by_name(&name)?;
@@ -185,13 +231,69 @@ async fn process_symbols(client: &Client, asset: &Asset) -> Result<BTreeMap<Stri
             zip_pdb.read_exact(&mut raw_pdb)?;
             let mut pdb = Pdb::open(Cursor::new(&*raw_pdb))?;
             let addr_map = pdb.address_map()?;
+
+            // check for the GameState struct
+            let types = pdb.type_information()?;
+            let mut iter = types.iter();
+            let mut parent_fields_idx = Vec::new();
+            while let Ok(Some(type_)) = iter.next() {
+                if let Ok(TypeData::Class(class)) = type_.parse() {
+                    if class.name.to_string() != "OpenRCT2::GameState_t" {
+                        continue;
+                    }
+
+                    let fields_idx = match class.fields {
+                        Some(fields) => fields,
+                        None => continue,
+                    };
+
+                    parent_fields_idx.push(fields_idx);
+                }
+            }
+
+            // scan again for the GameState field list and find
+            // CompletedScenarioValue
+            let mut iter = types.iter();
+            while let Ok(Some(type_)) = iter.next() {
+                if parent_fields_idx.iter().all(|&idx| idx != type_.index()) {
+                    continue;
+                }
+
+                if let Ok(TypeData::FieldList(list)) = type_.parse() {
+                    let field = list
+                        .fields
+                        .iter()
+                        .flat_map(|field| match field {
+                            TypeData::Member(member) => Some(member),
+                            _ => None,
+                        })
+                        .find(|member| member.name.to_string() == "ScenarioCompletedCompanyValue");
+                    if let Some(field) = field {
+                        offsets.game_state_completed_value = Some(field.offset);
+                    }
+                }
+            }
+
+            // look for the globals
             let globals = pdb.global_symbols()?;
             let mut iter = globals.iter();
             while let Ok(Some(symbol)) = iter.next() {
                 match symbol.parse() {
-                    Ok(SymbolData::Data(d)) if TARGETS.contains(&&*d.name.to_string()) => {
+                    Ok(SymbolData::Data(d)) => {
+                        let field = match d.name.to_string().as_ref() {
+                            "gScreenFlags" => &mut offsets.screen_flags,
+                            "gScenarioCompletedCompanyValue" => &mut offsets.completed_value,
+                            "OpenRCT2::_gameState" => &mut offsets.openrct2_game_state,
+                            "_gameState" => &mut offsets.openrct2_game_state,
+                            _ => continue,
+                        };
+
+                        if field.is_some() {
+                            continue;
+                        }
+
                         if let Some(offset) = d.offset.to_rva(&addr_map) {
-                            offsets.insert(d.name.to_string().to_string(), offset.0);
+                            *field = Some(offset.0);
                         }
                     }
                     _ => {}
@@ -200,7 +302,7 @@ async fn process_symbols(client: &Client, asset: &Asset) -> Result<BTreeMap<Stri
         }
     }
 
-    Ok(offsets)
+    Ok(())
 }
 
 fn checkout_repo() -> Result<RepoInfo> {
@@ -208,10 +310,7 @@ fn checkout_repo() -> Result<RepoInfo> {
     let repo = RepoBuilder::new()
         .bare(true)
         .clone("https://github.com/OpenRCT2/OpenRCT2", path.as_ref())?;
-    Ok(RepoInfo {
-        repo,
-        _path: path,
-    })
+    Ok(RepoInfo { repo, _path: path })
 }
 
 #[derive(Deserialize)]
@@ -257,6 +356,7 @@ impl Cache {
     async fn save(&self) -> Result<()> {
         let file = OpenOptions::new()
             .write(true)
+            .truncate(true)
             .create(true)
             .open(Self::FILE_NAME)
             .await?;
@@ -270,9 +370,95 @@ impl Cache {
 struct CacheAsset {
     id: u64,
     size: u64,
-    offsets: Option<BTreeMap<String, u32>>,
+    offsets: Option<Offsets>,
     hash: Option<String>,
     has_dll: bool,
+}
+
+#[derive(Default, Deserialize, Serialize, Clone)]
+struct Offsets {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    screen_flags: Option<u32>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    completed_value: Option<u32>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    openrct2_game_state: Option<u32>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    game_state_completed_value: Option<u64>,
+}
+
+impl Offsets {
+    pub fn is_valid(&self) -> bool {
+        let has_screen_flags = self.screen_flags.is_some();
+        let has_completed_value = self.completed_value.is_some();
+        let has_game_state_data =
+            self.openrct2_game_state.is_some() && self.game_state_completed_value.is_some();
+        has_screen_flags && (has_completed_value ^ has_game_state_data)
+    }
+
+    async fn write_offset<W: AsyncWrite + Unpin>(
+        &self,
+        writer: &mut W,
+        has_dll: bool,
+        name: &str,
+        kind: &str,
+        offsets: &[usize],
+    ) -> Result<()> {
+        let mut offsets = offsets
+            .iter()
+            .map(|offset| format!("0x{offset:x}"))
+            .collect::<Vec<_>>();
+        if has_dll {
+            offsets.insert(0, "\"openrct2.dll\"".into());
+        }
+        let offsets = offsets.join(", ");
+
+        writer
+            .write_all(format!("    {kind} {name} : {offsets};\n").as_bytes())
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn write_offsets<W: AsyncWrite + Unpin>(
+        &self,
+        writer: &mut W,
+        has_dll: bool,
+    ) -> Result<()> {
+        if let Some(offset) = self.screen_flags {
+            self.write_offset(writer, has_dll, "gScreenFlags", "byte", &[offset as usize])
+                .await?;
+        }
+
+        if let Some(offset) = self.completed_value {
+            self.write_offset(
+                writer,
+                has_dll,
+                "gScenarioCompletedCompanyValue",
+                "ulong",
+                &[offset as usize],
+            )
+            .await?;
+        }
+
+        if let (Some(state_offset), Some(field_offset)) =
+            (self.openrct2_game_state, self.game_state_completed_value)
+        {
+            self.write_offset(
+                writer,
+                has_dll,
+                "gScenarioCompletedCompanyValue",
+                "ulong",
+                &[state_offset as usize, 0, field_offset as usize],
+            )
+            .await?;
+        }
+
+        Ok(())
+    }
 }
 
 struct RepoInfo {
