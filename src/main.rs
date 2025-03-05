@@ -117,9 +117,9 @@ async fn main() -> Result<()> {
             {
                 Some(cached) => {
                     let mut cached = cached.clone();
-                    if !cached.is_valid() {
-                        process_symbols(&client, symbols_asset, &mut cached).await?;
-                    }
+                    // if !cached.is_valid() {
+                    process_symbols(&client, symbols_asset, &mut cached).await?;
+                    // }
 
                     cached
                 }
@@ -293,6 +293,7 @@ async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) 
 
                                 &mut offsets.game_state
                             }
+                            "_mapChangedExpected" => &mut offsets.map_changed_expected,
                             _ => continue,
                         };
 
@@ -399,6 +400,9 @@ struct Offsets {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     game_state_completed_value: Option<u64>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    map_changed_expected: Option<u32>,
 }
 
 impl Offsets {
@@ -408,7 +412,10 @@ impl Offsets {
         let has_game_state_data =
             self.game_state.is_some() && self.game_state_completed_value.is_some();
         let has_pointer_info = self.game_state_is_pointer.is_some();
-        has_screen_flags && (has_completed_value ^ (has_game_state_data && has_pointer_info))
+        let has_map_change = self.map_changed_expected.is_some();
+        has_screen_flags
+            && (has_completed_value ^ (has_game_state_data && has_pointer_info))
+            && has_map_change
     }
 
     async fn write_offset<W: AsyncWrite + Unpin>(
@@ -475,6 +482,11 @@ impl Offsets {
                 &offsets,
             )
             .await?;
+        }
+
+        if let Some(offset) = self.map_changed_expected {
+            self.write_offset(writer, has_dll, "_mapChangedExpected", "byte", &[offset])
+                .await?;
         }
 
         Ok(())

@@ -34,3 +34,7 @@ split {
         return true;
     }
 }
+
+isLoading {
+    return _mapChangedExpected == 1;
+}
