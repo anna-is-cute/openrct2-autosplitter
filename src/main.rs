@@ -203,12 +203,11 @@ async fn process_release(
 
             cached
         }
-        _ if release.id == 202370656 => {
+        _ => {
             let mut offsets = Offsets::default();
             process_symbols(client, symbols_asset, &mut offsets).await?;
             offsets
         }
-        _ => return Ok(()),
     };
 
     if !release_offsets.autosplitter_will_work() {
@@ -225,8 +224,8 @@ async fn process_release(
     cache.assets.insert(
         (binary_asset.id, binary_asset.size),
         CacheAsset {
-            id: symbols_asset.id,
-            size: symbols_asset.size,
+            id: binary_asset.id,
+            size: binary_asset.size,
             hash: Some(hash),
             offsets: None,
             has_dll,
