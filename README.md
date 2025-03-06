@@ -13,10 +13,10 @@ RCT2. Right-click LiveSplit, choose `Edit Splits`, then click
 
 Any GitHub release for OpenRCT2 that satisfies all of the following
 conditions is supported:
-- has a zip file containing `"symbols-x64"` in the name
+- has a zip file containing `symbols-x64` in the name
 - has a `.pdb` file inside that zip with the following symbols
   - `gScreenFlag`
-  - `gScenarioCompletedCompanyValue`
+  - `gScenarioCompletedCompanyValue` or `OpenRCT2::_gameState` or `_gameState`
 - has a zip file containing `"windows-portable-x64"` in the name
 - has a file called `openrct2.exe` inside that zip
 
