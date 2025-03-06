@@ -66,7 +66,7 @@ async fn main() -> Result<()> {
         .write_all(b"// OpenRCT2 Autosplitter by anna\n")
         .await?;
     output
-        .write_all(b"// https://git.anna.lgbt/anna/openrct2-autosplitter\n\n")
+        .write_all(b"// https://github.com/anna-is-cute/openrct2-autosplitter\n\n")
         .await?;
 
     println!("Getting cache...");

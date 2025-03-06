@@ -1,5 +1,5 @@
 // OpenRCT2 Autosplitter by anna
-// https://git.anna.lgbt/anna/openrct2-autosplitter
+// https://github.com/anna-is-cute/openrct2-autosplitter
 
 state("openrct2", "v0.4.20 (1c1b6d4)") {
     byte gScreenFlags : 0x1021345;
