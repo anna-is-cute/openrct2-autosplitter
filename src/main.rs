@@ -83,7 +83,8 @@ async fn main() -> Result<()> {
             &mut hashes,
             &client,
             &mut offsets,
-        ).await;
+        )
+        .await;
         if let Err(e) = res {
             eprintln!("could not process release {}: {}", release.name, e);
         }
@@ -284,46 +285,64 @@ async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) 
             let mut pdb = Pdb::open(Cursor::new(&*raw_pdb))?;
             let addr_map = pdb.address_map()?;
 
-            // check for the GameState struct
+            // check for classes
+            let mut game_state_fields_idx = None;
+
             let types = pdb.type_information()?;
-            let mut iter = types.iter();
-            let mut parent_fields_idx = Vec::new();
-            while let Ok(Some(type_)) = iter.next() {
-                if let Ok(TypeData::Class(class)) = type_.parse() {
-                    if class.name.to_string() != "OpenRCT2::GameState_t" {
-                        continue;
-                    }
+            let types = types
+                .iter()
+                .map(|t| Ok((t.index(), t)))
+                .collect::<HashMap<_, _>>()?;
+            for type_ in types.values() {
+                let class = match type_.parse() {
+                    Ok(TypeData::Class(class)) => class,
+                    _ => continue,
+                };
 
-                    let fields_idx = match class.fields {
-                        Some(fields) => fields,
-                        None => continue,
-                    };
+                let idx = match class.name.to_string().as_ref() {
+                    "OpenRCT2::GameState_t" => &mut game_state_fields_idx,
+                    _ => continue,
+                };
 
-                    parent_fields_idx.push(fields_idx);
-                }
+                let fields_idx = match class.fields {
+                    Some(fields) => fields,
+                    None => continue,
+                };
+
+                *idx = Some(fields_idx);
             }
 
-            // scan again for the GameState field list and find
-            // CompletedScenarioValue
-            let mut iter = types.iter();
-            while let Ok(Some(type_)) = iter.next() {
-                if parent_fields_idx.iter().all(|&idx| idx != type_.index()) {
-                    continue;
-                }
+            let set_offset = |idx: pdb::TypeIndex, name: &str, offset: &mut Option<u64>| {
+                let type_ = match types.get(&idx) {
+                    Some(t) => t,
+                    None => return,
+                };
 
-                if let Ok(TypeData::FieldList(list)) = type_.parse() {
-                    let field = list
-                        .fields
-                        .iter()
-                        .flat_map(|field| match field {
-                            TypeData::Member(member) => Some(member),
-                            _ => None,
-                        })
-                        .find(|member| member.name.to_string() == "ScenarioCompletedCompanyValue");
-                    if let Some(field) = field {
-                        offsets.game_state_completed_value = Some(field.offset);
-                    }
+                let list = match type_.parse() {
+                    Ok(TypeData::FieldList(list)) => list,
+                    _ => return,
+                };
+
+                let field = list
+                    .fields
+                    .iter()
+                    .flat_map(|field| match field {
+                        TypeData::Member(member) => Some(member),
+                        _ => None,
+                    })
+                    .find(|member| member.name.to_string() == name);
+                if let Some(field) = field {
+                    *offset = Some(field.offset);
                 }
+            };
+
+            // find GameState.ScenarioCompletedCompanyValue
+            if let Some(idx) = game_state_fields_idx {
+                set_offset(
+                    idx,
+                    "ScenarioCompletedCompanyValue",
+                    &mut offsets.game_state_completed_value,
+                );
             }
 
             // look for the globals
