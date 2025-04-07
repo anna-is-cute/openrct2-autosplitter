@@ -2,6 +2,8 @@
 // https://github.com/anna-is-cute/openrct2-autosplitter
 
 state("openrct2", "v0.4.21 (ea5f02a)") {
+    byte gScreenFlags : 0x105c9d5;
+    ulong gScenarioCompletedCompanyValue : 0xf0b880, 0xe00;
     byte _mapChangedExpected : 0xf0b869;
 }
 
