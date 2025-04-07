@@ -338,11 +338,22 @@ async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) 
 
             // find GameState.ScenarioCompletedCompanyValue
             if let Some(idx) = game_state_fields_idx {
+                // first look for ScenarioCompletedCompanyValue
                 set_offset(
                     idx,
                     "ScenarioCompletedCompanyValue",
                     &mut offsets.game_state_completed_value,
                 );
+
+                // then look for scenarioCompletedCompanyValue (they changed the
+                // casing)
+                if offsets.game_state_completed_value.is_none() {
+                    set_offset(
+                        idx,
+                        "scenarioCompletedCompanyValue",
+                        &mut offsets.game_state_completed_value,
+                    );
+                }
             }
 
             // look for the globals
@@ -352,6 +363,7 @@ async fn process_symbols(client: &Client, asset: &Asset, offsets: &mut Offsets) 
                 if let Ok(SymbolData::Data(d)) = symbol.parse() {
                     let field = match d.name.to_string().as_ref() {
                         "gScreenFlags" => &mut offsets.screen_flags,
+                        "gLegacyScene" => &mut offsets.screen_flags,
                         "gScenarioCompletedCompanyValue" => &mut offsets.completed_value,
                         "OpenRCT2::_gameState" => {
                             offsets.game_state_is_pointer = Some(true);

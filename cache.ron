@@ -777,8 +777,10 @@
             id: 243827624,
             size: 36407177,
             offsets: Some((
+                screen_flags: Some(17156565),
                 game_state: Some(15775872),
                 game_state_is_pointer: Some(true),
+                game_state_completed_value: Some(3584),
                 map_changed_expected: Some(15775849),
             )),
             hash: None,
