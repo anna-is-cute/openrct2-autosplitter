@@ -49,6 +49,7 @@
         252173754: "v0.4.27 (dbb9fd9)",
         258991551: "v0.4.28 (5847457)",
         264548595: "v0.4.29 (ebe87be)",
+        274067145: "v0.4.30 (b0f30a5)",
     },
     assets: {
         (4314271, 6831714): (
@@ -959,6 +960,26 @@
             size: 82640599,
             offsets: None,
             hash: Some("ff26fd46d2761c8db5fcfb867534f43e08d2d6ea9c6f96d427cc71a770d4b32c"),
+            has_dll: false,
+        ),
+        (336202316, 82684208): (
+            id: 336202316,
+            size: 82684208,
+            offsets: None,
+            hash: Some("e2652b4edbbac6765ac15df571b347688faf2a0100f5c9355c4886a2c92d0ec6"),
+            has_dll: false,
+        ),
+        (336202317, 38442158): (
+            id: 336202317,
+            size: 38442158,
+            offsets: Some((
+                screen_flags: Some(18572197),
+                game_state: Some(17225704),
+                game_state_is_pointer: Some(true),
+                game_state_completed_value: Some(5560),
+                map_changed_expected: Some(17225449),
+            )),
+            hash: None,
             has_dll: false,
         ),
     },
