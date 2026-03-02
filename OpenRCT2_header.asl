@@ -1,6 +1,12 @@
 // OpenRCT2 Autosplitter by anna
 // https://github.com/anna-is-cute/openrct2-autosplitter
 
+state("openrct2", "v0.4.32 (25c7379)") {
+    byte gScreenFlags : 0x1270814;
+    ulong gScenarioCompletedCompanyValue : 0x1278e70, 0x15b8;
+    byte _mapChangedExpected : 0x12733d8;
+}
+
 state("openrct2", "v0.4.31 (dae57fc)") {
     byte gScreenFlags : 0x11cd614;
     ulong gScenarioCompletedCompanyValue : 0x11d5ed8, 0x15b8;
@@ -293,6 +299,10 @@ init {
     var module = modules.First();
     string hash = vars.CalcModuleHash(module);
     switch (hash) {
+        case "ae75be9b19b2ca12c24dfa042c2c2cd3540a7da727a4a408d10f26fad56ef955":
+            version = "v0.4.32 (25c7379)";
+            vars.loadRemover = true;
+            break;
         case "43b1b3bd3077ee2c8859310244feb0806ae3d936f310ebe1b5352bb5aa9e0aa8":
             version = "v0.4.31 (dae57fc)";
             vars.loadRemover = true;
