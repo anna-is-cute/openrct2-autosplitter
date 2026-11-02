@@ -59,6 +59,7 @@
         363765561: "v0.5.4 (4a7ee14)",
         383539326: "v0.5.5 (8694e34)",
         408937799: "v0.5.6 (82b3097)",
+        430519119: "v0.5.7 (44472e4)",
     },
     assets: {
         (4314271, 6831714): (
@@ -1169,6 +1170,26 @@
             size: 82152808,
             offsets: None,
             hash: Some("d36655a8b852d0974379617d8ccc8de7aa974ef076fbeac3cbc46fcdf2c87bc1"),
+            has_dll: false,
+        ),
+        (698061161, 37973853): (
+            id: 698061161,
+            size: 37973853,
+            offsets: Some((
+                screen_flags: Some(19240020),
+                game_state: Some(19273528),
+                game_state_is_pointer: Some(true),
+                game_state_completed_value: Some(8488),
+                map_changed_expected: Some(19249485),
+            )),
+            hash: None,
+            has_dll: false,
+        ),
+        (698061163, 82158608): (
+            id: 698061163,
+            size: 82158608,
+            offsets: None,
+            hash: Some("b3499bdbd02efa3a317d053ef077c431460672412b93152c2a1b6ce6294a853a"),
             has_dll: false,
         ),
     },
